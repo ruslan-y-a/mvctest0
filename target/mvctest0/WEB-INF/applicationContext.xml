@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:repository="http://www.springframework.org/schema/data/repository"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.11.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+		http://www.springframework.org/schema/data/repository http://www.springframework.org/schema/data/repository/spring-repository-2.1.xsd">
+
+
+
+     <context:annotation-config/>
+
+    <context:component-scan base-package="home">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+   <tx:annotation-driven/>
+<!--
+   <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource" primary="true">
+        <property name="driverClassName" value="org.sqlite.JDBC"/>
+        <property name="url" value="jdbc:sqlite:/home/user/DB/sqlite/phones.db"/>
+        <property name="username"  value=""/>
+        <property name="password" value=""/>
+     </bean>
+       <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" primary="true">
+      <property name="entityManagerFactory" ref="entityManagerFactory"/>
+     </bean>
+     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" primary="true">
+      <property name="dataSource" ref="dataSource" />
+      <property name="packagesToScan" value="home.rdb.entities" />
+	  <property name="persistenceUnitName" value="phones" />	  
+      <property name="jpaVendorAdapter">
+         <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
+      </property>
+ 
+     </bean>
+-->
+  <!-- File Upload bean config-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- set the maximum file size in bytes -->
+        <property name="maxUploadSize" value="1000000"/>
+    </bean>
+        <!--Excel and PDF xml view configuration 
+    <bean class="org.springframework.web.servlet.view.XmlViewResolver">
+        <property name="order" value="0" />
+        <property name="location">
+            <value>excel-pdf-config.xml</value>
+        </property>
+    </bean>
+  -->
+     
+</beans>
