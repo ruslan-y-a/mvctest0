@@ -21,24 +21,36 @@ public class Xmlpars {
         DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document document = documentBuilder.parse(path);
         Node root = document.getDocumentElement();
-        NodeList childs = root.getChildNodes();
-        if (childs==null || childs.getLength()==0) {return null;}
+       // NodeList  nodeList = doc.getElementsByTagName("row"); = root.getChildNodes();
+        System.out.println("===== XML read: root " + root.getNodeName());
+        NodeList nodeList = document.getElementsByTagName("users");
+        if (nodeList==null || nodeList.getLength()==0) {return null;}
         List<Users> users = new ArrayList<>();
-        for (int i=0;i<childs.getLength();i++) {
-            Node nitem = childs.item(i);
-            NamedNodeMap attributes =nitem.getAttributes();
+        for (int i=0;i<nodeList.getLength();i++) {
+            Node nitem = nodeList.item(i);
+            System.out.println("===== XML read: item " + nitem.getNodeName());
+          //  NamedNodeMap attributes =nitem.getAttributes();
+            NodeList attributes = nitem.getChildNodes();
             if (attributes!=null && attributes.getLength()>0) {
               try {
                   Users user = new Users();
                   for (int j = 0; j < attributes.getLength(); j++) {
-                      Node attribute = attributes.item(i);
-                      tag = attribute.getNodeName().toString();
-                      value = attribute.getNodeValue();
-                      field = user.getClass().getDeclaredField(tag);
-                      field.setAccessible(true);
-                      field.set(user, (tag.equals("id") ? Long.parseLong(value) : value));
+
+                      Node attribute = attributes.item(j);
+                      if (attribute.getNodeType() == Node.ELEMENT_NODE) {
+                          //    tag = attribute.getNodeName().toString();
+                          tag = attribute.getNodeName();
+                          System.out.println("===== XML read: attributes tag " + tag);
+                          value = attribute.getTextContent();// getNodeValue();
+                          System.out.println("===== XML read: attributes value " + value);
+
+                          field = user.getClass().getDeclaredField(tag);
+                          field.setAccessible(true);
+                          field.set(user, (tag.equals("id") ? Long.parseLong(value) : value));
+                      }
                   }
                   users.add(user);
+                  System.out.println("===== XML read: user " + user);
               } catch (Exception e)  {}
             }
         }

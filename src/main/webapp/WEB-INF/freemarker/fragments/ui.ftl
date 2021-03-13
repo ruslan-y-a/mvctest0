@@ -1,11 +1,11 @@
-<#macro head>
+<#macro head basePath="">
   <div class="head">
-      <link rel="stylesheet" type="text/css" href="${basePath}res/css/main.css" />
+      <link rel="stylesheet" type="text/css" href="${basePath}/res/css/main.css" />
       <meta charset="UTF-8">
  </div>
 </#macro>
 
-<#macro footer>
+<#macro footer basePath="">
   <div class="footer">
      <div><span>footer text</span></div>
                 <div id="main-menu" class="main-menu">
@@ -17,7 +17,8 @@
 
  </div>
 </#macro>
-<#macro header title="">
+
+<#macro header title="" basePath="">
   <div class="header">
 
         <img class="banner__photo" th:src="${basePath}res/img/logo.png">
@@ -31,10 +32,10 @@
                 </ul>
             </div>
          </nav>
-     
 
  </div>
 </#macro>
+
  <#macro formInput id name label type="text" value="">
    <label for="${id}">${label}</label> 
    <input type="${type}" id="${id}" name="${name}" value="${value}">

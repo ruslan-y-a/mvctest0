@@ -95,4 +95,13 @@
 
 -->
 
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <!--need to use ' /** ' not ' /* ' if you want to intercept all requests.-->
+            <!--<mvc:mapping path="/**"/>-->
+            <bean class="home.config.StatsInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
       </beans>

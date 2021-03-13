@@ -10,7 +10,7 @@
   <@ui.header title="Spring mvc freemaker upload"/>
 </header>
 <div class="main-content">
-         <h2>Exception occured at: ${exception.date}</h2>
+         <h2>Exception occured at: ${base}</h2>
           <h2>Exception Message   : ${exception.message}</h2>
 </div>
 

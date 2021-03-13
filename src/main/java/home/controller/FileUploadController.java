@@ -3,6 +3,7 @@ package home.controller;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.rmi.NoSuchObjectException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,6 +23,8 @@ import net.minidev.json.JSONValue;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -40,10 +43,12 @@ import home.service.UsersService;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
+@PropertySource("classpath:application.properties")
 public class FileUploadController {
 	@Autowired UsersService usersRepo;
 	@Autowired ObjectMapper objectMapper;
 	@Autowired private Environment env;
+	@Value("${filepath}") private String userfilepath;
 
 	@RequestMapping(value = { "/download/list" }, method = RequestMethod.GET)
     public ModelAndView rolesorder() {
@@ -59,8 +64,10 @@ public class FileUploadController {
  }
     @ResponseBody
 	@RequestMapping(value = { "/download/list/{id}" }, method = RequestMethod.GET)
-	public Users rfinduser(@PathVariable Long id) {
+	public Users rfinduser(@PathVariable Long id) throws NoSuchObjectException {
 		Users user = usersRepo.findById(id);
+		if (user==null) {throw new NoSuchObjectException(" NoSuchObjectException ");}
+
 		return user;
 	}
 	
@@ -90,8 +97,9 @@ public class FileUploadController {
 					System.out.println("File content type: " + file.getContentType());
 
 					//	ClassPathResource pdfFile = new ClassPathResource("/files/" );
-					final String userfilepath = env.getProperty("filepath");
+					userfilepath = env.getProperty("filepath");
 					final String sfile = file.getOriginalFilename();
+					System.out.println("File is saving under: " + userfilepath + sfile);
 					File newFile = new File(userfilepath + sfile); //new File(rootPath + File.separator + file.getOriginalFilename());
 
 					BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(newFile));
@@ -99,8 +107,11 @@ public class FileUploadController {
 					stream.close();
 
 					System.out.println("File is saved under: " + newFile.getPath());// rootPath + File.separator + file.getOriginalFilename());
-					parse(userfilepath + sfile);
-					List<Users> list = Xmlpars.parse(userfilepath + sfile); list.forEach(x -> usersRepo.save(x));
+					List<Users> list = Xmlpars.parse(userfilepath + sfile);
+					list.forEach(x -> {
+						System.out.println(x + " is reading");
+						try{usersRepo.save(x);System.out.println(x + "  saved");} catch (Exception e) { System.out.println(x + " was not saved");}
+					});
 					/*
 					List<Users> list = parseList(newFile);
 					list.forEach(x -> usersRepo.save(x));
@@ -133,7 +144,7 @@ public class FileUploadController {
 
 		    return mSubjects;
 	  }
-
+/*
 	public void parse(String file) throws JsonProcessingException, MalformedURLException {
 		String json = parseUrl(new URL(file));
 		JsonFactory factory = new JsonFactory();
@@ -152,7 +163,7 @@ public class FileUploadController {
 	  	JSONObject weatherJsonObject = (JSONObject) JSONValue.parseWithException(json);
 
 		}
-
+*/
 	public static String parseUrl(URL url) {
 		if (url == null) { return ""; }
 		StringBuilder stringBuilder = new StringBuilder();

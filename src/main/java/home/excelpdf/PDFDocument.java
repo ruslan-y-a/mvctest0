@@ -20,7 +20,7 @@ import home.entities.Users;
 
 @Component
 public class PDFDocument extends AbstractPdfView {
-
+/*
 	public void buildPdfDocumentMy(
 			Map<String, Object> model,
 			Document document,
@@ -28,7 +28,7 @@ public class PDFDocument extends AbstractPdfView {
 			HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		buildPdfDocument(model, document, writer, request, response);
-	}
+	}*/
 	@Override
 	 protected void buildPdfDocument(
 	            Map<String, Object> model,

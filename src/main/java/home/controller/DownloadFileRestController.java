@@ -1,12 +1,14 @@
 package home.controller;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
 
 import com.itextpdf.text.pdf.PdfDocument;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import home.excelpdf.CsvViewImpl;
 import home.excelpdf.ExcelDocument;
 import home.excelpdf.PDFDocument;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -19,6 +21,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
@@ -49,10 +53,11 @@ import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/download")
+@PropertySource("classpath:application.properties")
 public class DownloadFileRestController {
 	@Autowired UsersService usersRepo;
 	@Autowired private Environment env;
-	//@Autowired PDFDocument pDFDocument;
+	@Value("${filepath}") private String userfilepath;
 //	@Autowired PdfWriter pdfWriter;
 
 	@RequestMapping(value = "/pdf", method = RequestMethod.GET, produces = "application/pdf")
@@ -70,18 +75,29 @@ public class DownloadFileRestController {
   headers.add("Pragma", "no-cache");
   headers.add("Expires", "0");
 
-  ByteArrayOutputStream baos = new ByteArrayOutputStream();
-  Document document =  getPdf();
+  if (userfilepath.isBlank()) {userfilepath = env.getProperty("filepath");}
+  final String fname=userfilepath+"phones-list.pdf";
+  FileOutputStream fos = new FileOutputStream(fname);
+  //ByteArrayOutputStream baos = new ByteArrayOutputStream();
+  Document document =  new Document();
+  System.out.println("=====================================1");
+		PdfWriter pdfWriter = PdfWriter.getInstance(document, fos);
+		System.out.println("=====================================2");
+		document.open();
+		System.out.println("=====================================3");
+		 getPdf(document);
+		System.out.println("=====================================4");
+		 document.close();
+		System.out.println("=====================================5");
   //pDFDocument.buildPdfDocumentMy(pDFDocument.getAttributesMap(), document, PdfWriter, request, httpresponse );
-		PdfWriter.getInstance(document, baos);
-  byte[] pdf = baos.toByteArray();
+  byte[] pdf = Files.readAllBytes((new File(fname)).toPath());
   InputStream inputStream = new ByteArrayInputStream(pdf);
   InputStreamResource inputStreamResource = new InputStreamResource(inputStream);
   headers.setContentLength(pdf.length);
 	headers.put("Content-Disposition", Collections.singletonList("attachment; filename=phones.pdf"));
-  baos.flush();
+ // baos.flush();
   ResponseEntity<InputStreamResource> response = new ResponseEntity<InputStreamResource>(inputStreamResource, headers, HttpStatus.OK);
-  baos.close();
+ // baos.close();
 		return response;
  }
 	
@@ -164,10 +180,26 @@ public class DownloadFileRestController {
 //		return new ModelAndView("pdfDocument", "modelObject", cats);
  
     }
+
+	@RequestMapping(value = "/csv", method= RequestMethod.GET)
+	public ModelAndView csv() {
+
+		System.out.println("CSVController pdf is called");
+		List<Users> cats = usersRepo.findAll();
+		//pdfDocument - look excel-pdf-config.xml
+		ModelAndView mv = new ModelAndView();
+		mv.setView(new CsvViewImpl());
+		mv.getModel().put("csvData",cats);
+		mv.getModel().put("csvHeader", new String[]{"id", "name", "phone"});
+		return mv;
+//		return new ModelAndView("pdfDocument", "modelObject", cats);
+
+	}
+ /////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
-	private Document getPdf() throws DocumentException {
-		Document document = new PdfDocument();
-		document.open();
+	private void getPdf(Document document) throws DocumentException {
+
 		    PdfPTable table = new PdfPTable(3);
 	        PdfPCell header1 = new PdfPCell(new Phrase("id"));
 	        PdfPCell header2 = new PdfPCell(new Phrase("User"));
@@ -189,7 +221,7 @@ public class DownloadFileRestController {
 	        document.add(table);
 
 	//	document.close();
-		return document;
+		//return document;
 	}
 	private Workbook getXls() throws DocumentException, IOException {
 		 Workbook workbook = new XSSFWorkbook(); 
