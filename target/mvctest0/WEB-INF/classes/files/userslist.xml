@@ -1,0 +1,22 @@
+<userslist>
+<users>
+
+  <name>User</name>
+  <phone>222-22</phone>
+</users>
+<users>
+
+  <name>Admin</name>
+  <phone>333-33</phone>
+</users>
+<users>
+
+  <name>Observer</name>
+  <phone>444-44</phone>
+</users>
+<users>
+
+  <name>Manager</name>
+  <phone>555-55</phone>
+</users>
+</userslist>
